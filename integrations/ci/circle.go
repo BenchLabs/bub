@@ -101,6 +101,7 @@ func (c *Circle) CheckBuildStatus(m *core.Manifest) error {
 	}
 	p, err := c.client.FollowProject(c.cfg.GitHub.Organization, m.Repository)
 	if err != nil && !strings.HasPrefix(err.Error(), "403") {
+		log.Printf("failed to follow circleci project: %v", err)
 		return err
 	} else if p == nil {
 		if err != nil {
@@ -111,6 +112,7 @@ func (c *Circle) CheckBuildStatus(m *core.Manifest) error {
 	}
 	head, err := core.MustInitGit(".").CurrentHEAD()
 	if err != nil {
+		log.Printf("failed to initialize git: %v", err)
 		return err
 	}
 	log.Printf("Commit: %v", head)
@@ -118,6 +120,7 @@ func (c *Circle) CheckBuildStatus(m *core.Manifest) error {
 	for {
 		b, err = c.checkBuildStatus(head, m)
 		if err != nil {
+			log.Printf("failed to check circleci build status: %v", err)
 			return err
 		}
 		if isFinished(b) {
