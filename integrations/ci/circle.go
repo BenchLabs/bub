@@ -169,13 +169,7 @@ func (c *Circle) DownloadArtifact(m *core.Manifest, fname, path string) error {
 
 	for _, a := range arr {
 		if strings.Contains(a.URL, fname) {
-			if len(a.URL) > 0 {
-				err := utils.DownloadFile(path, fmt.Sprintf("%s?circle-token=%s", a.URL, c.client.Token))
-				if err != nil {
-					return err
-				}
-				return nil
-			}
+			return utils.DownloadFile(path, fmt.Sprintf("%s?circle-token=%s", a.URL, c.client.Token))
 		}
 	}
 
