@@ -23,6 +23,10 @@ type Circle struct {
 	client *circleci.Client
 }
 
+func (c *Circle) GetAccount() string {
+	return c.cfg.GitHub.Organization
+}
+
 func MustInitCircle(cfg *core.Configuration) *Circle {
 	token := os.Getenv("CIRCLE_TOKEN")
 	if token == "" && cfg.Circle.Token == "" {
@@ -150,4 +154,39 @@ func (c *Circle) checkBuildStatus(head string, m *core.Manifest) (*circleci.Buil
 		}
 	}
 	return nil, NoBuildFound
+}
+
+func (c *Circle) DownloadArtifact(m *core.Manifest, fname, path string) error {
+	b, err := c.GetCompletedBuild(m)
+	if err != nil {
+		return err
+	}
+
+	arr, err := getBuildArtifacts(c.client, c.GetAccount(), m.Repository, b)
+	if err != nil {
+		return err
+	}
+
+	for _, a := range arr {
+		if strings.Contains(a.URL, fname) {
+			if len(a.URL) > 0 {
+				err := utils.DownloadFile(path, fmt.Sprintf("%s?circle-token=%s", a.URL, c.client.Token))
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+		}
+	}
+
+	return nil
+}
+
+func getBuildArtifacts(c *circleci.Client, account, repo string, b *circleci.Build) ([]*circleci.Artifact, error) {
+	var arr []*circleci.Artifact
+	arr, err := c.ListBuildArtifacts(account, repo, b.BuildNum)
+	if err != nil {
+		return arr, err
+	}
+	return arr, nil
 }
