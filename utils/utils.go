@@ -2,17 +2,19 @@ package utils
 
 import (
 	"errors"
-	"github.com/manifoldco/promptui"
 	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/exec"
 	"path"
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/manifoldco/promptui"
 )
 
 var (
@@ -221,4 +223,25 @@ func Contains(str string, haystack ...string) bool {
 		}
 	}
 	return false
+}
+
+func DownloadFile(path string, url string) error {
+	out, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -3,14 +3,15 @@ package ci
 import (
 	"errors"
 	"fmt"
-	"github.com/benchlabs/bub/core"
-	"github.com/benchlabs/bub/utils"
-	"github.com/jszwedko/go-circleci"
 	"log"
 	"net/url"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/benchlabs/bub/core"
+	"github.com/benchlabs/bub/utils"
+	"github.com/jszwedko/go-circleci"
 )
 
 var (
@@ -20,6 +21,10 @@ var (
 type Circle struct {
 	cfg    *core.Configuration
 	client *circleci.Client
+}
+
+func (c *Circle) GetAccount() string {
+	return c.cfg.GitHub.Organization
 }
 
 func MustInitCircle(cfg *core.Configuration) *Circle {
@@ -91,43 +96,50 @@ func configurationExist() (bool, error) {
 }
 
 func (c *Circle) CheckBuildStatus(m *core.Manifest) error {
-	exists, err := configurationExist()
+	b, err := c.GetCompletedBuild(m)
 	if err != nil {
 		return err
 	}
+	return isSuccess(b)
+}
+
+func (c *Circle) GetCompletedBuild(m *core.Manifest) (*circleci.Build, error) {
+	var build *circleci.Build
+	exists, err := configurationExist()
+	if err != nil {
+		return build, err
+	}
 	if !exists {
 		log.Printf("CircleCI not configured. Skipping check...")
-		return nil
+		return build, nil
 	}
 	p, err := c.client.FollowProject(c.cfg.GitHub.Organization, m.Repository)
 	if err != nil && !strings.HasPrefix(err.Error(), "403") {
-		return err
+		return build, err
 	} else if p == nil {
 		if err != nil {
 			log.Printf("API Error: %v", err)
 		}
 		log.Printf("CircleCI not configured or the current user has no access to the project. Skipping check...")
-		return nil
+		return build, nil
 	}
 	head, err := core.MustInitGit(".").CurrentHEAD()
 	if err != nil {
-		return err
+		return build, err
 	}
 	log.Printf("Commit: %v", head)
-	var b *circleci.Build
 	for {
-		b, err = c.checkBuildStatus(head, m)
+		build, err = c.checkBuildStatus(head, m)
 		if err != nil {
-			return err
+			return build, err
 		}
-		if isFinished(b) {
+		if isFinished(build) {
 			break
 		}
-		log.Printf("Status: '%v', waiting 10s. %v", b.Status, b.BuildURL)
+		log.Printf("Status: '%v', waiting 10s. %v", build.Status, build.BuildURL)
 		time.Sleep(10 * time.Second)
 	}
-
-	return isSuccess(b)
+	return build, nil
 }
 
 func (c *Circle) checkBuildStatus(head string, m *core.Manifest) (*circleci.Build, error) {
@@ -142,4 +154,33 @@ func (c *Circle) checkBuildStatus(head string, m *core.Manifest) (*circleci.Buil
 		}
 	}
 	return nil, NoBuildFound
+}
+
+func (c *Circle) DownloadArtifact(m *core.Manifest, fname, path string) error {
+	b, err := c.GetCompletedBuild(m)
+	if err != nil {
+		return err
+	}
+
+	arr, err := getBuildArtifacts(c.client, c.GetAccount(), m.Repository, b)
+	if err != nil {
+		return err
+	}
+
+	for _, a := range arr {
+		if strings.Contains(a.URL, fname) {
+			return utils.DownloadFile(path, fmt.Sprintf("%s?circle-token=%s", a.URL, c.client.Token))
+		}
+	}
+
+	return nil
+}
+
+func getBuildArtifacts(c *circleci.Client, account, repo string, b *circleci.Build) ([]*circleci.Artifact, error) {
+	var arr []*circleci.Artifact
+	arr, err := c.ListBuildArtifacts(account, repo, b.BuildNum)
+	if err != nil {
+		return arr, err
+	}
+	return arr, nil
 }

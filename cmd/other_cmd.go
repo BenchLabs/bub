@@ -1,6 +1,11 @@
 package cmd
 
 import (
+	"fmt"
+	"log"
+	"os"
+	"path"
+
 	"github.com/benchlabs/bub/core"
 	"github.com/benchlabs/bub/integrations"
 	"github.com/benchlabs/bub/integrations/atlassian"
@@ -10,8 +15,6 @@ import (
 	"github.com/benchlabs/bub/integrations/vault"
 	"github.com/benchlabs/bub/utils"
 	"github.com/urfave/cli"
-	"log"
-	"os"
 )
 
 func buildSetupCmd() cli.Command {
@@ -55,6 +58,44 @@ func buildCircleCmds(cfg *core.Configuration, manifest *core.Manifest) []cli.Com
 			Aliases: []string{"c"},
 			Action: func(c *cli.Context) error {
 				return ci.MustInitCircle(cfg).CheckBuildStatus(manifest)
+			},
+		},
+		{
+			Name:    "artifact",
+			Usage:   "Get the build artifact of the current commit. You need to provide the artifact file name as an argument.",
+			Aliases: []string{"a"},
+			Action: func(c *cli.Context) error {
+				var dir string
+
+				if c.NArg() < 1 {
+					return fmt.Errorf("You have too few arguments. Please provide the name of the artifact you want to download.")
+				}
+				if c.NArg() > 1 {
+					return fmt.Errorf("You have too many arguments. The only argument accepted is the name of the artifact you want to download.")
+				}
+
+				fname := c.Args().Get(0)
+				dir = c.String("path")
+				if len(dir) == 0 {
+					d, err := os.Getwd()
+					if err != nil {
+						return err
+					}
+					dir = d
+				}
+
+				_, err := os.Stat(dir)
+				if err != nil {
+					return err
+				}
+
+				return ci.MustInitCircle(cfg).DownloadArtifact(manifest, fname, path.Join(dir, fname))
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "path, p",
+					Usage: "path to download the artifact to",
+				},
 			},
 		},
 		{
