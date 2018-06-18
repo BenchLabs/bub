@@ -18,6 +18,18 @@ var (
 	NoBuildFound = errors.New("no build found for the commit")
 )
 
+type CircleCINotConfiguredError struct {
+	msg string
+}
+
+func (ce *CircleCINotConfiguredError) Error() string {
+	return fmt.Sprintf("CircleCI Configuration Error : %s", ce.msg)
+}
+
+func NewCircleCINotConfiguredError(s string) *CircleCINotConfiguredError {
+	return &CircleCINotConfiguredError{s}
+}
+
 type Circle struct {
 	cfg    *core.Configuration
 	client *circleci.Client
@@ -98,6 +110,9 @@ func configurationExist() (bool, error) {
 func (c *Circle) CheckBuildStatus(m *core.Manifest) error {
 	b, err := c.GetCompletedBuild(m)
 	if err != nil {
+		if _, ok := err.(*CircleCINotConfiguredError); ok {
+			return nil
+		}
 		return err
 	}
 	return isSuccess(b)
@@ -110,8 +125,9 @@ func (c *Circle) GetCompletedBuild(m *core.Manifest) (*circleci.Build, error) {
 		return build, err
 	}
 	if !exists {
-		log.Printf("CircleCI not configured. Skipping check...")
-		return build, nil
+		errMsg := "CircleCI not configured. Skipping check..."
+		log.Printf(errMsg)
+		return build, NewCircleCINotConfiguredError(errMsg)
 	}
 	p, err := c.client.FollowProject(c.cfg.GitHub.Organization, m.Repository)
 	if err != nil && !strings.HasPrefix(err.Error(), "403") {
@@ -120,8 +136,9 @@ func (c *Circle) GetCompletedBuild(m *core.Manifest) (*circleci.Build, error) {
 		if err != nil {
 			log.Printf("API Error: %v", err)
 		}
-		log.Printf("CircleCI not configured or the current user has no access to the project. Skipping check...")
-		return build, nil
+		errMsg := "CircleCI not configured or the current user has no access to the project. Skipping check..."
+		log.Printf(errMsg)
+		return build, NewCircleCINotConfiguredError(errMsg)
 	}
 	head, err := core.MustInitGit(".").CurrentHEAD()
 	if err != nil {
