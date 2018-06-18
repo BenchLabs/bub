@@ -11,7 +11,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "bub"
 	app.Usage = "A tool for all your needs."
-	app.Version = "0.60.0"
+	app.Version = "0.61.0"
 	app.EnableBashCompletion = true
 	app.Commands = cmd.BuildCmds()
 	app.Run(os.Args)
