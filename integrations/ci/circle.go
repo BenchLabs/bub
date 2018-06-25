@@ -166,7 +166,7 @@ func (c *Circle) checkBuildStatus(head string, m *core.Manifest) (*circleci.Buil
 		return nil, err
 	}
 	for _, b := range builds {
-		commit := b.AllCommitDetails[len(b.AllCommitDetails)-1].Commit
+		commit := b.VcsRevision
 		if commit == head {
 			return b, nil
 		}
