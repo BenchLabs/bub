@@ -1,6 +1,6 @@
 # bub
 
-`bench-hub` -> `bhub` -> `bub` a developer workflow cli tool developed at [bench.co](https://bench.co bench.co)
+`bench-hub` -> `bhub` -> `bub` a developer workflow cli tool developed at [bench.co](https://bench.co)
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Lil_Bub_2013_%28crop_for_thumb%29.jpg/440px-Lil_Bub_2013_%28crop_for_thumb%29.jpg)
 
@@ -48,10 +48,9 @@ To setup bub, you need to have AWS credentials. Run:
 
     $ bub setup
 
-First you'll be pompted to enter your AWS credentials in the
-`~/.aws/credentials`. Then bub will create the `~/.config/bub/config.yml`. You
-don't have to edit it unless you want to add some credentials to get more
-features. Adding your Jenkins credentials makes bub super userful.
+First you'll be prompted to enter your AWS credentials in the `~/.aws/credentials`. Then bub will create 
+the `~/.config/bub/config.yml`. You don't have to edit it unless you want to add some credentials to get 
+more features. Adding your Jenkins credentials makes bub super useful.
 
 ## Usage
 
