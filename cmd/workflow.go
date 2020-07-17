@@ -86,7 +86,7 @@ func (wf *Workflow) MassDone(noOperation bool) error {
 			})
 		}
 
-		if !g.IsDifferentFromMaster() {
+		if !g.IsDifferentFromMainBranch() {
 			log.Printf("%v - No commits. Skipping.", repoDir)
 			return "", nil
 		}

@@ -152,7 +152,7 @@ func buildRepositoryCmds(cfg *core.Configuration, manifest *core.Manifest) []cli
 STOP!
 
 This command will clone and/or Update all 'active' Bench repositories.
-Existing work will be stashed and pull the master branch. Your work won't be lost, but be careful.
+Existing work will be stashed and pull the main branch. Your work won't be lost, but be careful.
 Please make sure you are in the directory where you store your repos and not a specific repo.
 
 Continue?`

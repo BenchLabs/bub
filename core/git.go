@@ -284,11 +284,11 @@ func (g *Git) sanitizeBranchName(name string) string {
 	return strings.Trim(r2.ReplaceAllString(r.ReplaceAllString(name, "-"), "-"), "-")
 }
 
-func (g *Git) LogNotInMasterSubjects() []string {
+func (g *Git) LogNotInMainSubjects() []string {
 	return strings.Split(g.MustRunGitWithStdout("log", "HEAD", "--not", "origin/master", "--no-merges", "--pretty=format:%s"), "\n")
 }
 
-func (g *Git) LogNotInMasterBody() string {
+func (g *Git) LogNotInMainBody() string {
 	return g.MustRunGitWithStdout("log", "HEAD", "--not", "origin/master", "--no-merges", "--pretty=format:-> %B")
 }
 
@@ -417,8 +417,8 @@ func (g *Git) ContainedUncommittedChanges() bool {
 	return utils.HasNonEmptyLines(strings.Split(g.MustRunGitWithStdout("status", "--short"), "\n"))
 }
 
-func (g *Git) IsDifferentFromMaster() bool {
-	return utils.HasNonEmptyLines(g.LogNotInMasterSubjects())
+func (g *Git) IsDifferentFromMainBranch() bool {
+	return utils.HasNonEmptyLines(g.LogNotInMainSubjects())
 }
 
 func (g *Git) ISDirty() bool {
@@ -426,7 +426,7 @@ func (g *Git) ISDirty() bool {
 }
 
 func (g *Git) Diff() (string, error) {
-	if !g.IsDifferentFromMaster() {
+	if !g.IsDifferentFromMainBranch() {
 		return "", nil
 	}
 	return g.RunGitWithFullOutput("--no-pager", "diff")

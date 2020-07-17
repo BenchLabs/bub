@@ -69,7 +69,7 @@ func (gh *GitHub) CreatePR(title, body, repoDir string) error {
 	branch := g.GetCurrentBranch()
 	base := "master"
 	if title == "" {
-		subjects := g.LogNotInMasterSubjects()
+		subjects := g.LogNotInMainSubjects()
 		if len(subjects) == 1 {
 			title = subjects[0]
 		} else {
@@ -78,7 +78,7 @@ func (gh *GitHub) CreatePR(title, body, repoDir string) error {
 	}
 
 	if body == "" {
-		body = g.LogNotInMasterBody()
+		body = g.LogNotInMainBody()
 	}
 
 	root, err := g.GetRepositoryRootPath()

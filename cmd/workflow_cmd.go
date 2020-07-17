@@ -92,7 +92,7 @@ func buildWorkflowCmds(cfg *core.Configuration, manifest *core.Manifest) []cli.C
 			Subcommands: []cli.Command{
 				{
 					Name:  "start",
-					Usage: "Clean the repository, checkout master, pull and create new branch.",
+					Usage: "Clean the repository, checkout main branch, pull and create new branch.",
 					Flags: []cli.Flag{
 						cli.BoolFlag{Name: unstash, Usage: unstashDesc},
 					},
@@ -127,7 +127,7 @@ func buildWorkflowCmds(cfg *core.Configuration, manifest *core.Manifest) []cli.C
 				{
 					Name:    "update",
 					Aliases: []string{"u"},
-					Usage:   "Clean the repository, checkout master and pull.",
+					Usage:   "Clean the repository, checkout main branch and pull.",
 					Flags: []cli.Flag{
 						cli.BoolFlag{Name: unstash, Usage: unstashDesc},
 					},

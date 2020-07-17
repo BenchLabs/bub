@@ -207,7 +207,7 @@ func (c *Confluence) createPage(m *core.Manifest) ([]byte, error) {
 <p>
 	<a href="https://github.com/{{ .Config.GitHub.Organization }}/{{ .Manifest.Repository }}">Repository</a> |
 	<strong>Diffs</strong>
-		<a href="https://github.com/{{ .Config.GitHub.Organization }}/{{ .Manifest.Repository }}/compare/production...master" title="Pending changes from master to Production">Production / Master</a> /
+		<a href="https://github.com/{{ .Config.GitHub.Organization }}/{{ .Manifest.Repository }}/compare/production...master" title="Pending changes from main branch to Production">Production / Master</a> /
 		<a href="https://github.com/{{ .Config.GitHub.Organization }}/{{ .Manifest.Repository }}/compare/production...staging" title="Pending changes from Staging to Production">Staging / Production</a> /
 		<a href="https://github.com/{{ .Config.GitHub.Organization }}/{{ .Manifest.Repository }}/compare/production-rollback...production" title="Changes in the previous deployment.">Previous / Current Production</a> |
 	<a href="{{ .Config.Jenkins.Server }}/job/{{ .Config.GitHub.Organization }}/job/{{ .Manifest.Repository }}">Jenkins</a> |
