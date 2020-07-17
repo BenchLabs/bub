@@ -21,11 +21,11 @@ form of a Pull Request. This could be changes to the code or documentation.
 
 ### Committer
 
-Committers have the ability to merge Pull Requests into the master branch and
+Committers have the ability to merge Pull Requests into the main branch and
 will be responsible for releasing new versions of the software. Committers will
 be Bench Engineers, but Bench may occasionally invite non-Bench Contributors to
 also become Committers. Committers should work with Contributors to get
-contributions merged into the master branch. When Committers feel contributions
+contributions merged into the main branch. When Committers feel contributions
 are not suitable for merging, they will give appropriate feedback or work with
 the Contributor to make the changes suitable. In some situations Committers may
 need to reject contributions, but will clearly explain why and encourage

@@ -11,7 +11,7 @@ func buildJenkinsCmds(cfg *core.Configuration, manifest *core.Manifest) []cli.Co
 		{
 			Name:    "master",
 			Aliases: []string{"m"},
-			Usage:   "Opens the (web) master build.",
+			Usage:   "Opens the (web) main build.",
 			Action: func(c *cli.Context) error {
 				return ci.MustInitJenkins(cfg, manifest).OpenPage()
 			},
@@ -19,7 +19,7 @@ func buildJenkinsCmds(cfg *core.Configuration, manifest *core.Manifest) []cli.Co
 		{
 			Name:    "console",
 			Aliases: []string{"c"},
-			Usage:   "Opens the (web) console of the last build of master.",
+			Usage:   "Opens the (web) console of the last build of main branch.",
 			Action: func(c *cli.Context) error {
 				return ci.MustInitJenkins(cfg, manifest).OpenPage("lastBuild/consoleFull")
 			},

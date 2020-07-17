@@ -86,7 +86,7 @@ func (wf *Workflow) MassDone(noOperation bool) error {
 			})
 		}
 
-		if !g.IsDifferentFromMaster() {
+		if !g.IsDifferentFromMainBranch() {
 			log.Printf("%v - No commits. Skipping.", repoDir)
 			return "", nil
 		}
@@ -128,7 +128,7 @@ func (wf *Workflow) OpenCommit(c *core.GitCommit) error {
 		"GitHub Commit": func() error {
 			return wf.GitHub().OpenCommit(wf.manifest, c)
 		},
-		"GitHub Compare with Master": func() error {
+		"GitHub Compare with Main Branch": func() error {
 			return wf.GitHub().OpenCompareCommitsPage(wf.manifest, c, "master")
 		},
 	}
