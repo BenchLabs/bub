@@ -128,7 +128,7 @@ func (wf *Workflow) OpenCommit(c *core.GitCommit) error {
 		"GitHub Commit": func() error {
 			return wf.GitHub().OpenCommit(wf.manifest, c)
 		},
-		"GitHub Compare with Master": func() error {
+		"GitHub Compare with Main Branch": func() error {
 			return wf.GitHub().OpenCompareCommitsPage(wf.manifest, c, "master")
 		},
 	}
